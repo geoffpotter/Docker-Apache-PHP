@@ -28,7 +28,6 @@ RUN apt-get install -qy tmux
 RUN apt-get install -qy php5-mysql
 RUN apt-get install -qy php5-mysqlnd
 
-
 # Install proxy Dependencies
 RUN \
   apt-get update -q && \
@@ -36,11 +35,17 @@ RUN \
   apt-get clean -y && \
   rm -rf /var/lib/apt/lists/*
  
+RUN a2enmod rewrite
+RUN a2enmod ssl
+
 RUN \
   service apache2 restart && \
   rm -R -f /var/www && \
   ln -s /web /var/www
   
+RUN curl -sSk https://getcomposer.org/installer | php -- --disable-tls && \
+       mv composer.phar /usr/local/bin/composer
+
 # Update apache configuration with this one
 RUN \
   mv /etc/apache2/sites-available/000-default.conf /etc/apache2/000-default.conf && \
